@@ -63,11 +63,15 @@ define GO_BUILD
 $(1):
 > @mkdir -p "$(DIST_DIR)"
 > echo "=====> Building $(4) (v$(VERSION))"
-> CGO_ENABLED=0 GOOS=$(2) GOARCH=$(3) $(5) $(GO) build -trimpath -ldflags='$(LDFLAGS)' -o "$(DIST_DIR)/$(4)" .
+> CGO_ENABLED=0 GOOS=$(2) GOARCH=$(3) $(5) $(GO) build -trimpath -ldflags='$(LDFLAGS) $(6)' -o "$(DIST_DIR)/$(4)" .
 endef
 
-$(eval $(call GO_BUILD,windows-amd64,windows,amd64,phone2pc-windows-amd64.exe,))
-$(eval $(call GO_BUILD,windows-arm64,windows,arm64,phone2pc-windows-arm64.exe,))
+
+# Windows 追加 -H windowsgui
+$(eval $(call GO_BUILD,windows-amd64,windows,amd64,phone2pc-windows-amd64.exe,,-H windowsgui))
+$(eval $(call GO_BUILD,windows-arm64,windows,arm64,phone2pc-windows-arm64.exe,,-H windowsgui))
+
+# 其他平台保持为空
 $(eval $(call GO_BUILD,linux-amd64,linux,amd64,phone2pc-linux-amd64,))
 $(eval $(call GO_BUILD,linux-arm64,linux,arm64,phone2pc-linux-arm64,))
 $(eval $(call GO_BUILD,linux-armv7,linux,arm,phone2pc-linux-armv7,GOARM=7))
