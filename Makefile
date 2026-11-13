@@ -14,9 +14,9 @@ PKG      := phone2pc
 
 # ---------- 版本计算 ----------
 # 1) 有 VERSION 环境变量，直接用
-# 2) HEAD 正好在某个 tag 上（git describe --exact-match），用该 tag
-# 3) 否则取最近一个 tag，patch +1
-# 4) 完全没有 tag，从 0.0.1 开始
+# 2) 如果有精确的 Tag (如 v1.2.0)，直接用
+# 3) 如果没有 Tag 或在 Tag 之后有提交，则计算 = 最近Tag + 提交次数 (如 v1.2.0 后有3次 commit，则变为 1.2.3)
+# 4) 如果完全没有 Tag，则计算 = 0.0. + 总提交次数 (如 5 次 commit，则变为 0.0.5)
 VERSION ?= $(shell \
   if ! command -v git >/dev/null 2>&1 || ! git rev-parse --git-dir >/dev/null 2>&1; then \
     echo "0.0.1"; exit 0; \
@@ -26,10 +26,13 @@ VERSION ?= $(shell \
     echo "$$exact" | sed 's/^v//'; exit 0; \
   fi; \
   last=$$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0"); \
-  echo "$$last" | sed 's/^v//' \
-    | awk -F. '{if (NF>=3) print $$1"."$$2"."$$3+1; \
-               else if (NF==2) print $$1"."$$2".1"; \
-               else print $$0".0.1"}')
+  base=$$(echo "$$last" | sed 's/^v//'); \
+  commits=$$(git rev-list --count "$$last"..HEAD 2>/dev/null || git rev-list --count HEAD); \
+  echo "$$base" | awk -F. -v c=$$commits '{ \
+    if (NF>=3) print $$1"."$$2"."$$3+c; \
+    else if (NF==2) print $$1"."$$2"."c; \
+    else print $$0".0."c \
+  }')
 
 # ---------- Git 元信息 ----------
 GIT_COMMIT  := $(shell git rev-parse --short=12 HEAD 2>/dev/null || echo "source-archive")
