@@ -1,0 +1,43 @@
+# ===== 构建产物 =====
+dist/
+*.exe
+*.test
+*.out
+*.prof
+*.dll
+*.so
+*.dylib
+
+# ===== 运行时文件 =====
+config.json
+config.local.json
+uploadFile/
+temp/
+
+# ===== 编辑器 =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-*
+
+# ===== 操作系统 =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== 日志 =====
+*.log
+logs/
+
+# ===== 敏感信息 =====
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+
+# ===== 依赖（可选，需要 vendor 时删掉这一行）=====
+vendor/
