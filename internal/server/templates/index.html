@@ -68,13 +68,14 @@
   </div>
 
   <div class="card">
-    <h2>⚙️ 配置</h2>
+     <h2>⚙️ 配置</h2>
     <div class="row">
       <label>上传路径</label>
-      <input type="text" id="uploadDir" value="{{.UploadDir}}" placeholder="./uploadFile 或 D:\Receive">
+      <input type="text" id="uploadDir" value="{{.UploadDir}}" placeholder="./uploadFile 或 /mnt/d/Receive">
+      <button class="btn-secondary" onclick="browseDir(event)">浏览...</button>
       <button onclick="saveDir()">保存</button>
     </div>
-    <p class="hint">当前绝对路径：<code>{{.AbsUploadDir}}</code>（浏览器无法直接选择文件夹，请手写路径，相对路径基于程序运行目录）</p>
+    <p class="hint">当前绝对路径：<code>{{.AbsUploadDir}}</code></p>
 
     <div class="row" style="margin-top:.8rem">
       <label>端口</label>
@@ -190,6 +191,32 @@ document.getElementById('uploadForm').addEventListener('submit', function () {
   b.disabled = true;
   b.textContent = '上传中…';
 });
+
+async function browseDir(e) {
+  const btn = e.target;
+  const oldText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = '请在电脑上选择...';
+  
+  try {
+    // 触发后端弹窗
+    const r = await fetch('/api/config/browse', { method: 'POST' });
+    const j = await r.json();
+    if (j.ok) {
+      // 把拿到的路径填进输入框
+      document.getElementById('uploadDir').value = j.msg;
+    } else {
+      if (!j.msg.includes('取消') && !j.msg.includes('未选择')) {
+        alert(j.msg);
+      }
+    }
+  } catch (err) {
+    alert("请求失败，请确保电脑端没有关闭程序");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = oldText;
+  }
+}
 </script>
 </body>
 </html>

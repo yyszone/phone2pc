@@ -48,6 +48,7 @@ func (s *Server) Start() error {
 
 	// API
 	mux.HandleFunc("/api/config/dir", s.apiSetDir)
+	mux.HandleFunc("/api/config/browse", s.apiBrowseDir) // <--- 新增这一行
 	mux.HandleFunc("/api/config/port", s.apiSetPort)
 	mux.HandleFunc("/api/files/clear", s.apiClear) // 精确匹配优先
 	mux.HandleFunc("/api/files/", s.apiDelete)    // 前缀匹配

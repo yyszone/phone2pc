@@ -12,6 +12,7 @@ import (
 	"phone2pc/internal/config"
 	"phone2pc/internal/uploader"
 	"phone2pc/internal/version"
+	"phone2pc/internal/dialog" // 引入刚写的包
 )
 
 // pageData 首页模板数据结构
@@ -141,4 +142,20 @@ func (s *Server) apiShutdown(w http.ResponseWriter, r *http.Request) {
 		time.Sleep(500 * time.Millisecond)
 		os.Exit(0)
 	}()
+}
+
+// 在文件末尾添加：
+func (s *Server) apiBrowseDir(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		writeJSON(w, false, "Method Not Allowed")
+		return
+	}
+	
+	dir, err := dialog.SelectDirectory()
+	if err != nil {
+		writeJSON(w, false, "未选择或失败: "+err.Error())
+		return
+	}
+	
+	writeJSON(w, true, dir)
 }
