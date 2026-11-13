@@ -30,6 +30,7 @@ desktop.ini
 # ===== 日志 =====
 *.log
 logs/
+phone2pc.log
 
 # ===== 敏感信息 =====
 .env
